@@ -4,48 +4,49 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-
 public class Server {
 
-   //private String host;
+   //On initialise des valeurs par defaut
+   private int port = 2345;
+   private String host = "127.0.0.15";
    private ServerSocket server = null;
    private boolean isRunning = true;
    
-   public Server(String host, int port) {
+   public Server(){
       try {
-
          server = new ServerSocket(port, 100, InetAddress.getByName(host));
-
       } catch (UnknownHostException e) {
          e.printStackTrace();
       } catch (IOException e) {
          e.printStackTrace();
       }
    }
-
    
-
+   public Server(String pHost, int pPort){
+      host = pHost;
+      port = pPort;
+      try {
+         server = new ServerSocket(port, 100, InetAddress.getByName(host));
+      } catch (UnknownHostException e) {
+         e.printStackTrace();
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+   }
+   
    //On lance notre serveur
-
    public void open(){
-
       
-
-      //Toujours dans un thread à part vu qu'il est dans une boucle infinie
-
-      Thread t = new Thread(new Runnable() {
+      Thread t = new Thread(new Runnable(){
          public void run(){
-            while(isRunning == true){
+            while(isRunning == true){   
                try {
                   //On attend une connexion d'un client
-                  Socket client = server.accept();
-                  
-                  //Une fois reçue, on la traite dans un thread séparé
-                  System.out.println("Connexion cliente reçue.");
-                  
+                  Socket client = server.accept();               
+                  System.out.println("Connexion cliente recue.");
                   Thread t = new Thread(new ClientProcessor(client));
                   t.start();
-
+                  
                } catch (IOException e) {
                   e.printStackTrace();
                }
@@ -59,17 +60,11 @@ public class Server {
             }
          }
       });
-
+      
       t.start();
-
    }
-
    
-
    public void close(){
-
       isRunning = false;
-
    }   
-
 }
